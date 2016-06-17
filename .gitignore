@@ -1,5 +1,21 @@
+
+# Core's dependencies are managed with Composer.
+vendor
+
+# Ignore configuration files that may contain sensitive information.
+docroot/sites/*/settings*.php
+docroot/sites/*/services*.yml
+
 # Ignore paths that contain user-generated content.
-docroot/files
 docroot/sites/*/files
 docroot/sites/*/private
+
+# Ignore SimpleTest multi-site environment.
+docroot/sites/simpletest
+
+# Ignore core phpcs.xml and phpunit.xml.
+docroot/core/phpcs.xml
+docroot/core/phpunit.xml
+
 acquia-files
+docroot/.idea
