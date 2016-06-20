@@ -1,6 +1,5 @@
-
 # Core's dependencies are managed with Composer.
-vendor
+docroot/vendor/*
 
 # Ignore configuration files that may contain sensitive information.
 docroot/sites/*/settings*.php
