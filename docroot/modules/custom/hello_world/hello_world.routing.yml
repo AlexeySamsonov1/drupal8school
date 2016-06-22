@@ -1,0 +1,7 @@
+hello_world.hello_world_controller_hello:
+  path: '/hello_world/hello/{name}'
+  defaults:
+    _controller: '\Drupal\hello_world\Controller\HelloWorldController::hello'
+    _title: 'Hello'
+  requirements:
+    _permission: 'access content'
