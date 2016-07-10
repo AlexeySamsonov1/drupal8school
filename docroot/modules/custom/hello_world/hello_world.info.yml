@@ -1,0 +1,5 @@
+name: Hello World
+description: Training module
+type: module
+package: Training
+core: 8.x
