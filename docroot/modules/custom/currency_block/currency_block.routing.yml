@@ -1,0 +1,7 @@
+currency_block.index:
+  path: '/currencies'
+  defaults:
+    _controller: '\Drupal\currency_block\Controller\CurrencyBlockController::index'
+    _title: 'Currencies'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains currency_block.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function currency_block_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the currency_block module.
+    case 'help.page.currency_block':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module provides block with list of currencies') . '</p>';
+      return $output;
+
+    default:
+  }
+}

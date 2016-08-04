@@ -1,0 +1,7 @@
+name: Block with currencies
+type: module
+description: This module provides block with list of currencies
+core: 8.x
+package: Training
+dependencies:
+  - block
