@@ -37,9 +37,9 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
    * {@inheritdoc}
    */
   public function build() {
-  $a = print_r($this->getConfiguration());
     $build = [];
-    $build['currency_block']['#markup'] = \Drupal::service('renderer')->render($this->description());
+    $markup = $this->getCurrencyBlockMarkup();
+    $build['currency_block']['#markup'] = \Drupal::service('renderer')->render($markup);
     $build['#cache'] = [
       'max_age' => 0,
     ];
@@ -52,7 +52,7 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
   public function blockForm($form, FormStateInterface $form_state) {
     $form = parent::blockForm($form, $form_state);
 
-    $config = $this->getConfiguration();kint($config);
+    $config = $this->getConfiguration();
     $default_configuration = $this->defaultConfiguration();
 
     $currency_xml = $this->get_xml_currency();
@@ -82,7 +82,6 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
    * {@inheritdoc}
    */
   public function blockValidate($form, FormStateInterface $form_state) {
-    kint($form);
     // At least one element should be chosen.
     if(!array_filter($form_state->getValue('currency_list'))) {
       $form_state->setErrorByName('currency_list', t('At least one element should be chosen.'));
@@ -130,29 +129,34 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
     return $currency_list;
   }
 
-  public function description() {
-    // We are going to output the results in a table with a nice header.
-
+  public function getCurrencyBlockMarkup() {
+    // We are going to output the results in a table.
     $header = [
-      [$this->t('Name')],
-      [$this->t('CharCode')],
-      [$this->t('Rate')],
+      $this->t('Name'),
+      $this->t('CharCode'),
+      $this->t('Rate'),
     ];
 
-
     $config = $this->getConfiguration();
-
+    $checked_values = (array_filter($config['currency_list']));kint($checked_values);
     $content['message'] = array(
-      '#markup' => $this->t('Generate a list of all entries in the database. There is no filter in the query.'),
+      '#markup' => $this->t('Generate a list of choosen currencies.'),
     );
 
-    foreach ($config as $row) {
-      // Normally we would add some nice formatting to our rows
-      // but for our purpose we are simply going to add our row
-      // to the array.
-      $rows[] = array('data' => (array) $row);
+    foreach ($checked_values as $key => $value) {dsm($key . '' . $value);
+      $rows[] = ['data' => []];
     }
-    $rows = array('Id', 'uid', 'Name');
+    foreach ($currency_arr['Currency'] as $row => $value) {
+      if (in_array($value['Name'], $options)) {
+        $rows[] = array($value['Name'], $value['CharCode'], $value['Rate']);
+      }
+
+    }
+    $rows = [
+      ['Id', 'uid', 'Name'],
+      ['Id', 'uid', 'Name'],
+      ['Id', 'uid', 'Name'],
+    ];
     $content['table'] = array(
       '#type' => 'table',
       '#header' => $header,
