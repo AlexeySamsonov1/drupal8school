@@ -50,24 +50,24 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
    * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state) {
+    $options = [];
     $form = parent::blockForm($form, $form_state);
 
     $config = $this->getConfiguration();
     $default_configuration = $this->defaultConfiguration();
 
     $currency_xml = $this->get_xml_currency();
-    $currency_arr = $this->convert_xml_to_array($currency_xml);
-    $currency_list = $this->build_currency_list($currency_arr);
-
+    $currency_list = $this->build_currency_list($currency_xml);
+    foreach ($currency_list as $item) {
+      $options[$item['CharCode']] = $item['Name'];
+    }
     $form['currency_list'] = array(
       '#type' => 'checkboxes',
       '#title' => $this->t('Choose currencies to display'),
-      '#options' => $currency_list['Name'],
+      '#options' => $options,
       '#default_value' => isset($config['currency_list']) ? $config['currency_list'] : $default_configuration['currency_list']
     );
 
-    //dsm($form);
-    //debug($form_state);
     return $form;
   }
 
@@ -118,12 +118,16 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
     return json_decode($json, TRUE);
   }
 
-  public function build_currency_list($currency_arr) {
+  public function build_currency_list($currency_xml) {
+    $currency_arr = $this->convert_xml_to_array($currency_xml);
     $currency_list = [];
     foreach ($currency_arr['Currency'] as $row) {
-      $currency_list['Name'][$row['CharCode']] = $row['Name'];
-      $currency_list['CharCode'][] = $row['CharCode'];
-      $currency_list['Rate'][] = $row['Rate'];
+      $currency_list[$row['CharCode']] = [
+        'Name' => $row['Name'],
+        'CharCode' => $row['CharCode'],
+        'Scale' => $row['Scale'],
+        'Rate' => $row['Rate'],
+      ];
     }
 
     return $currency_list;
@@ -132,31 +136,31 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
   public function getCurrencyBlockMarkup() {
     // We are going to output the results in a table.
     $header = [
+      $this->t('Scale'),
       $this->t('Name'),
       $this->t('CharCode'),
       $this->t('Rate'),
     ];
 
     $config = $this->getConfiguration();
-    $checked_values = (array_filter($config['currency_list']));kint($checked_values);
+    $checked_values = (array_filter($config['currency_list']));
     $content['message'] = array(
       '#markup' => $this->t('Generate a list of choosen currencies.'),
     );
 
-    foreach ($checked_values as $key => $value) {dsm($key . '' . $value);
-      $rows[] = ['data' => []];
-    }
-    foreach ($currency_arr['Currency'] as $row => $value) {
-      if (in_array($value['Name'], $options)) {
-        $rows[] = array($value['Name'], $value['CharCode'], $value['Rate']);
+    $currency_arr = $this->build_currency_list($this->get_xml_currency());
+    foreach ($checked_values as $key) {
+      if ($currency_arr[$key]) {
+        $rows[] = [
+          $currency_arr[$key]['Scale'],
+          $currency_arr[$key]['Name'],
+          $currency_arr[$key]['CharCode'],
+          $currency_arr[$key]['Rate'],
+        ];
       }
 
     }
-    $rows = [
-      ['Id', 'uid', 'Name'],
-      ['Id', 'uid', 'Name'],
-      ['Id', 'uid', 'Name'],
-    ];
+
     $content['table'] = array(
       '#type' => 'table',
       '#header' => $header,
