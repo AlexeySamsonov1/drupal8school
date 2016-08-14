@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Renderer;
+use Drupal\currency_block\CurrencyLoaderInterface;
 use Drupal\currency_block\Services\CurrencyLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,18 +35,16 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface, Container
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack object.
-   * @param \Drupal\book\BookManagerInterface $book_manager
-   *   The book manager.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
-   *   The node storage.
+   * @param Renderer $renderer
+   *   Renderer.
+   * @param CurrencyLoaderInterface $currencyLoader
+   *   The currencyLoader.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Renderer $renderer, CurrencyLoader $currencyList) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Renderer $renderer, CurrencyLoaderInterface $currencyLoader) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->renderer = $renderer;
-    $this->currencyLoader = $currencyList;
+    $this->currencyLoader = $currencyLoader;
   }
 
   /**

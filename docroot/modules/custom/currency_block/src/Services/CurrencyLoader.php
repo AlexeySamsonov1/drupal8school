@@ -3,12 +3,14 @@
 namespace Drupal\currency_block\Services;
 
 
-class CurrencyLoader {
+use Drupal\currency_block\CurrencyLoaderInterface;
+
+class CurrencyLoader implements CurrencyLoaderInterface {
 
   const NBRB_URL = 'http://www.nbrb.by/Services/XmlExRates.aspx';
 
   //TODO Leave description.
-  public function getCurrienciesFromNBRB() {
+  public function getCurrencies() {
     $date = new \DateTime();
     $day = $date->format('z');
 
@@ -54,7 +56,7 @@ class CurrencyLoader {
   }
 
   public function buildCurrencyList() {
-    $currency_arr = $this->getCurrienciesFromNBRB();
+    $currency_arr = $this->getCurrencies();
     $currency_list = [];
     foreach ($currency_arr['Currency'] as $row) {
       $currency_list[$row['CharCode']] = [
