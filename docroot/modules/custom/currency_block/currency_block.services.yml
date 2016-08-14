@@ -1,0 +1,3 @@
+services:
+  currency_block.currency.loader:
+    class: Drupal\currency_block\Services\CurrencyLoader

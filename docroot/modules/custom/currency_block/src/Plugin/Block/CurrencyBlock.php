@@ -5,6 +5,10 @@ namespace Drupal\currency_block\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\Renderer;
+use Drupal\currency_block\Services\CurrencyLoader;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'CurrencyBlock' block.
@@ -15,7 +19,48 @@ use Drupal\Core\Block\BlockPluginInterface;
  *  category = "Custom blocks"
  * )
  */
-class CurrencyBlock extends BlockBase implements BlockPluginInterface {
+class CurrencyBlock extends BlockBase implements BlockPluginInterface, ContainerFactoryPluginInterface  {
+
+  protected $renderer;
+
+  protected $currencyLoader;
+
+  /**
+   * Constructs a new BookNavigationBlock instance.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack object.
+   * @param \Drupal\book\BookManagerInterface $book_manager
+   *   The book manager.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
+   *   The node storage.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Renderer $renderer, CurrencyLoader $currencyList) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->renderer = $renderer;
+    $this->currencyLoader = $currencyList;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer'),
+      $container->get('currency_block.currency.loader')
+    );
+  }
+
 
   /**
    * {@inheritdoc}
@@ -23,6 +68,7 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
   public function getFormId() {
     return 'currency_form_id';
   }
+
   /**
    * {@inheritdoc}
    */
@@ -39,10 +85,11 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
   public function build() {
     $build = [];
     $markup = $this->getCurrencyBlockMarkup();
-    $build['currency_block']['#markup'] = \Drupal::service('renderer')->render($markup);
+    $build['currency_block']['#markup'] = $this->renderer->render($markup);
     $build['#cache'] = [
-      'max_age' => 0,
+      'max_age' => \Drupal\Core\Cache\Cache::PERMANENT,
     ];
+
     return $build;
   }
 
@@ -55,9 +102,7 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
 
     $config = $this->getConfiguration();
     $default_configuration = $this->defaultConfiguration();
-
-    $currency_xml = $this->get_xml_currency();
-    $currency_list = $this->build_currency_list($currency_xml);
+    $currency_list = $this->currencyLoader->buildCurrencyList();
     foreach ($currency_list as $item) {
       $options[$item['CharCode']] = $item['Name'];
     }
@@ -88,50 +133,6 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
     }
   }
 
-  public function get_xml_currency() {
-    $url = 'http://www.nbrb.by/Services/XmlExRates.aspx';
-
-    $client = \Drupal::httpClient();
-    try {
-      $request = $client->request('GET', $url, [
-        'headers' => [
-          'Accept',
-          'application/xml, text/xml'
-        ]
-      ]);
-      $response = $request->getBody();
-    }
-    catch (\Exception $e) {
-      watchdog_exception('currency block', $e, $e->getMessage());
-    }
-
-    if ($request->getStatusCode() == 200) {
-      return $response->getContents();
-    }
-
-  }
-
-  public function convert_xml_to_array($xml) {
-    $xml = simplexml_load_string($xml);
-    $json = json_encode($xml);
-
-    return json_decode($json, TRUE);
-  }
-
-  public function build_currency_list($currency_xml) {
-    $currency_arr = $this->convert_xml_to_array($currency_xml);
-    $currency_list = [];
-    foreach ($currency_arr['Currency'] as $row) {
-      $currency_list[$row['CharCode']] = [
-        'Name' => $row['Name'],
-        'CharCode' => $row['CharCode'],
-        'Scale' => $row['Scale'],
-        'Rate' => $row['Rate'],
-      ];
-    }
-
-    return $currency_list;
-  }
 
   public function getCurrencyBlockMarkup() {
     // We are going to output the results in a table.
@@ -148,17 +149,16 @@ class CurrencyBlock extends BlockBase implements BlockPluginInterface {
       '#markup' => $this->t('Generate a list of choosen currencies.'),
     );
 
-    $currency_arr = $this->build_currency_list($this->get_xml_currency());
+    $currency_list = $this->currencyLoader->buildCurrencyList();
     foreach ($checked_values as $key) {
-      if ($currency_arr[$key]) {
+      if ($currency_list[$key]) {
         $rows[] = [
-          $currency_arr[$key]['Scale'],
-          $currency_arr[$key]['Name'],
-          $currency_arr[$key]['CharCode'],
-          $currency_arr[$key]['Rate'],
+          $currency_list[$key]['Scale'],
+          $currency_list[$key]['Name'],
+          $currency_list[$key]['CharCode'],
+          $currency_list[$key]['Rate'],
         ];
       }
-
     }
 
     $content['table'] = array(
