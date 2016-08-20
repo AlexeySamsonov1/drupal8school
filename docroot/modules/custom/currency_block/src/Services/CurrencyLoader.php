@@ -12,7 +12,7 @@ class CurrencyLoader implements CurrencyLoaderInterface {
   //TODO Leave description.
   public function getCurrencies() {
     $date = new \DateTime();
-    $day = $date->format('z');
+    $day = $date->format('Ymd');
 
     $cid = 'currencyLoader:' . $day;
 
