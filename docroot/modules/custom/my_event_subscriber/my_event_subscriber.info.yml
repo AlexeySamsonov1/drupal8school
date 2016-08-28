@@ -1,0 +1,5 @@
+name: Register an Event Subscriber
+type: module
+description: Register an Event Subscriber in Drupal 8
+core: 8.x
+package: Training

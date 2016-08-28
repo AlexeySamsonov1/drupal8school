@@ -1,0 +1,5 @@
+services:
+  my_event_subscriber:
+    class: '\Drupal\my_event_subscriber\EventSubscriber\MyEventSubscriber'
+    tags:
+      - { name: 'event_subscriber' }

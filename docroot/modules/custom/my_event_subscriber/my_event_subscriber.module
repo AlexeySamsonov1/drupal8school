@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains my_event_subscriber.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function my_event_subscriber_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the my_event_subscriber module.
+    case 'help.page.my_event_subscriber':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Register an Event Subscriber in Drupal 8') . '</p>';
+      return $output;
+
+    default:
+  }
+}
