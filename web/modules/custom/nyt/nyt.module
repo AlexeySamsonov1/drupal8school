@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains nyt.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nyt_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nyt module.
+    case 'help.page.nyt':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Lesson 3') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nyt_theme($existing, $type, $theme, $path) {
+  return [
+    'nyt_articles' => [
+      'variables' => ['articles' => []],
+    ],
+  ];
+}
