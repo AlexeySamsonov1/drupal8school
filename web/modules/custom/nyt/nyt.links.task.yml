@@ -1,0 +1,38 @@
+# This file creates static local tasks (Tabs).
+# This file will be needed to place in module root.
+#
+# 'title' of the tab will show up on the user interface and tab.
+#
+# 'base_route' is the same as the name of the route where the "default" tab
+# appears. The base_route is used to group together related tabs.
+#
+# 'weight' is used to provide weights for the tabs if needed.
+# The tab whose route is the same as the base_route will by default
+# get a negative weight and appear on the left.
+#
+# 'parent_id' is used to create multi level of tabs.
+# To relate a tab to its parent use same name as parent_id as shown below in
+# nyt.nyt_articles.news.secondary.
+#
+nyt.nyt_articles.news:
+  route_name: nyt.nyt_articles.news
+  title: News
+  base_route: nyt.nyt_articles.news
+
+nyt.nyt_articles.news_day:
+  route_name: nyt.nyt_articles.news_day
+  title: Day
+  base_route: nyt.nyt_articles.news
+  weight: 2
+
+nyt.nyt_articles.news_week:
+  route_name: nyt.nyt_articles.news_week
+  title: Week
+  base_route: nyt.nyt_articles.news
+  weight: 3
+
+nyt.nyt_articles.news_form:
+  route_name: nyt.nyt_articles.news_form
+  title: Form
+  base_route: nyt.nyt_articles.news
+  weight: 4

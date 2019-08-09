@@ -1,0 +1,5 @@
+name: 'nyt'
+type: module
+description: 'Lesson 3'
+core: 8.x
+package: 'Custom'

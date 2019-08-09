@@ -1,0 +1,4 @@
+access nyt articles:
+  title: 'Access NYT articles'
+  description: 'Bypass access control when accessing NYT.'
+  restrict access: TRUE

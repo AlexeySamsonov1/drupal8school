@@ -1,0 +1,7 @@
+services:
+  logger.channel.nyt:
+    parent: logger.channel_base
+    arguments: ['nyt']
+  nyt.nyt_articles:
+    class: Drupal\nyt\NytArticlesService
+    arguments: ['@http_client', '@config.factory']

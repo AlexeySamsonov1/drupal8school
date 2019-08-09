@@ -1,0 +1,10 @@
+nyt.admin_service_settings:
+  title: 'NYT service settings'
+  parent: system.admin_config_services
+  description: 'Configure the NYT service.'
+  route_name: nyt.admin_service_settings
+
+nyt.nyt_articles:
+  route_name: nyt.nyt_articles.news
+  title: 'NYT articles'
+  menu_name: main

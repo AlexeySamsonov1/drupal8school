@@ -1,0 +1,36 @@
+nyt.admin_service_settings:
+  path: '/admin/config/services/nyt'
+  defaults:
+    _form: '\Drupal\nyt\Form\NytSettingsForm'
+    _title: 'NYT configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+nyt.nyt_articles.news:
+  path: 'news'
+  defaults:
+    _controller: '\Drupal\nyt\Controller\NytController::nytDayArticles'
+    _title: 'NYT articles'
+  requirements:
+    _permission: 'access nyt articles'
+nyt.nyt_articles.news_day:
+  path: 'news/day'
+  defaults:
+    _controller: '\Drupal\nyt\Controller\NytController::nytDayArticles'
+    _title: 'NYT articles for a day'
+  requirements:
+    _permission: 'access nyt articles'
+nyt.nyt_articles.news_week:
+  path: 'news/week'
+  defaults:
+    _controller: '\Drupal\nyt\Controller\NytController::nytWeekArticles'
+    _title: 'NYT articles for a week'
+  requirements:
+    _permission: 'access nyt articles'
+nyt.nyt_articles.news_form:
+  path: 'news/form'
+  defaults:
+    _form: '\Drupal\nyt\Form\SimpleForm'
+    _title: 'NYT articles Form'
+  requirements:
+    _permission: 'administer site configuration'

@@ -1,0 +1,6 @@
+<ul>
+  {% for article in articles %}
+    <li>{{ article.headline|e }}</li>
+      <span>{{ article.pub_date|date('m/d/Y') }}</span>
+  {% endfor %}
+</ul>
